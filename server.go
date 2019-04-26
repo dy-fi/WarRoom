@@ -3,7 +3,9 @@ package main
 import (
 	"html/template"
 	"io"
+	"os"
 
+    "github.com/joho/godotenv"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 
@@ -25,6 +27,11 @@ func main() {
 	t := &Template{
 		templates: template.Must(template.ParseGlob("public/views/*.html")),
 	}
+
+	err := godotenv.Load()
+  	if err != nil {
+    	log.Fatal("Error loading .env file")
+  	}
 
 	// echo instance
 	e := echo.New()
