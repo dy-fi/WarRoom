@@ -1,59 +1,53 @@
 package main
 
 import (
-	"html/template"
-	"io"
-	"os"
-
-    "github.com/joho/godotenv"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 
-	"github.com/dy-fi/war-room/handlers"
+	"github.com/foolin/goview"
+	"github.com/foolin/goview/supports/echoview"
+
+	"github.com/dy-fi/war-room/api"
+	// "github.com/dy-fi/war-room/db"
 )
-
-// Template reference struct
-type Template struct {
-	templates *template.Template
-}
-
-// Render Templates
-func (t *Template) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
-	return t.templates.ExecuteTemplate(w, name, data)
-}
 
 func main() {
 
-	t := &Template{
-		templates: template.Must(template.ParseGlob("public/views/*.html")),
-	}
-
-	err := godotenv.Load()
-  	if err != nil {
-    	log.Fatal("Error loading .env file")
-  	}
-
-	// echo instance
+	// ==================== INIT ==================== //
 	e := echo.New()
-	e.Static("/", "public/views")
+	e.Static("/", "public")
+
+	// ==================== MIDDLEWARE ==================== //
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-
 	//CORS
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"},
 		AllowMethods: []string{echo.GET, echo.HEAD, echo.PUT, echo.PATCH, echo.POST, echo.DELETE},
 	}))
 
-	// template renderer
-	e.Renderer = t
+	// // Authentication
+	// e.Use(middleware.BasicAuth(func(username, password string, e echo.Context) (bool, error) {
+	// 	if api.Verify(username, password) {
+	// 		return true, nil
+	// 	}
+	// 	return false, nil
+	// }))
 
-	// Routes
+	// ==================== TEMPLATES ==================== //
+	e.Renderer = echoview.New(goview.Config{
+		Root:         "views",
+		Extension:    ".html",
+		Master:       "/layouts/master",
+		DisableCache: true,
+	})
+
+	// ==================== ROUTES ==================== //
 	// index
-	e.GET("/", handlers.GetIndex)
+	e.GET("/", api.GetIndex)
 	// rooms
-	// e.GET("/rooms", handlers.GetRooms)
+	e.GET("/rooms", api.GetRooms)
 
-	// Start
+	// ==================== START ==================== //
 	e.Logger.Fatal(e.Start(":8000"))
 }

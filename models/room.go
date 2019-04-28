@@ -9,6 +9,9 @@ import (
 // Room model
 type Room struct {
 	gorm.Model
-	ID		uint
-	urls 	[]string
+	ID			uint 		`gorm:"PRIMARY_KEY;" json:"ID"`
+	// stored by ID
+	Owner		uint		`gorm:"NOT NULL;" json:"owner"`
+	Author		uint		`gorm:"NOT NULL;" json:"author"`
+	Urls 		[]string	`json:"urls"`
 }
