@@ -1,0 +1,18 @@
+<div>
+    <form method='POST' class='form-style col-sm-4' action='/sign-up'>
+        <!-- name  -->
+        <div class='form-group'>
+            <label for='name'>Room title</label>
+            <div>
+                <input type='text' id='name' name='name' class='form-control'>
+            </div>
+        </div>
+        <input type='hidden' id='owner' name='owner' value='{{.user}}'
+
+
+        <!-- submit  -->
+        <div class='form-group'>
+            <button class='btn btn-primary' type='submit'>Register</button>
+        </div>
+    </form>
+</div>

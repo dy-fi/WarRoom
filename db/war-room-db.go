@@ -5,15 +5,13 @@ import (
 	"github.com/jinzhu/gorm"
 	// MySql driver
 	_ "github.com/go-sql-driver/mysql"
-
 	// "github.com/dy-fi/war-room/models"
 )
-
 
 // Connect to MySql db
 func Connect() *gorm.DB {
 	db, err := gorm.Open("mysql", "dev@tcp(:3333)/wrdb")
-	
+
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
