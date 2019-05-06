@@ -3,13 +3,13 @@ package handlers
 import (
 	"log"
 	"net/http"
-	"strings"
-
+	
 	"github.com/labstack/echo"
 
 	"github.com/dy-fi/war-room/models"
 	repos "github.com/dy-fi/war-room/repositories"
 )
+
 
 // GetAllRooms - get all room documents in database
 func GetAllRooms(c echo.Context) error {
@@ -55,11 +55,6 @@ func GetRoom(c echo.Context) error {
 func EditRoom(c echo.Context) error {
 	// get ID param
 	id := c.Param("id")
-	// get form values
-	name := c.FormValue("name")
-	locs := c.FormValue("locations")
-	blob := c.FormValue("Blob")
-
 	// get room
 	room, err := repos.GetRoomByID(id)
 	if err != nil {
@@ -67,9 +62,9 @@ func EditRoom(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, "Error: Couldn't find room")
 	}
 	// bind
-	room.Name = name
-	room.Locations = strings.Fields(locs)
-	room.Blob = blob
+	if err := c.Bind(&room).Error; err != nil {
+
+	}
 
 	return c.JSON(http.StatusAccepted, room)
 }
@@ -79,7 +74,7 @@ func CreateRoom(c echo.Context) error {
 	r := models.Room{}
 	// couldn't bind request data to model
 	if err := c.Bind(r); err != nil {
-		return c.JSON(http.StatusBadRequest, "Error: Couldn't bind form data to room model")
+		return c.JSON(http.StatusBadRequest, "Error: Couldn't bind data to room model")
 	}
 	// couldn't create room in database
 	room, err := repos.CreateRoom(r)

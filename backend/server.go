@@ -3,10 +3,7 @@ package main
 import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
-
-	"github.com/foolin/goview"
-	"github.com/foolin/goview/supports/echoview"
-
+	
 	"github.com/dy-fi/war-room/handlers"
 )
 
