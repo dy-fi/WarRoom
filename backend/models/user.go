@@ -11,12 +11,12 @@ type User struct {
 	gorm.Model
 	ID       uint   `gorm:"primary_key;" json:"id"`
 	Username string `gorm:"unique; not null;" json:"username" validate:"min:8"`
-	Email    string `gorm:"unique; not null;" validate:"regexp=\A[\w+\-.]+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+\z"`
+	Email    string `gorm:"unique; not null;" json:"email" validate:"regexp=\A[\w+\-.]+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+\z"`
 	Password string `gorm:"NOT NULL;" validate:"min:8"`
 	// authorization signal
 	Auth	 int	
 	// owned rooms
-	Rooms []Room
+	MyCities []City	`gorm:"foreignkey:Mycities"`
 }
 
 // Functions here and not in the repository because they 

@@ -4,8 +4,8 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-// Room model
-type Room struct {
+// City model
+type City struct {
 	gorm.Model
 	ID			uint 		`gorm:"primary_key;" json:"ID"`
 	// name of the room
