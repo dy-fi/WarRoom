@@ -10,13 +10,19 @@ import (
 	"time"
 )
 
+// ScrapeData is scraped data from the webpage
+type ScrapeData struct {
+	name	string	
+	data	string
+}
+
 // ScrapeAgent builds a scrapper agent and gets all location values from that URL model
-func ScrapeAgent(url models.URL) (map[string]string, error) {
+func ScrapeAgent(page models.Page) ([]ScrapeData) {
 	// init collector
 	var s = colly.NewCollector(
 		colly.AllowURLRevisit(),
 		colly.Async(true),
-		colly.AllowedDomains("url"),
+		colly.AllowedDomains(page.Glob),
 	)
 
 	// limit rules
@@ -27,7 +33,7 @@ func ScrapeAgent(url models.URL) (map[string]string, error) {
 	})
 
 	// begin collection
-	s.Visit(url.Glob)
+	s.Visit(page.Glob)
 
 	var b string
 	// assign b to the body string 
@@ -35,18 +41,18 @@ func ScrapeAgent(url models.URL) (map[string]string, error) {
 		b = string(r.Body)
 	})
 
-	// result map
-	m := make(map[string]string)
+	// result list
+	m := []ScrapeData{}
 	// scrape for every location in URL
-	for _, i := range url.Locations {
+	for _, i := range page.Locations {
 		value, err := findElement(b, i.Address)
 		if err != nil {
-			return m, err
+			m = append(m, ScrapeData{i.Key, "ERROR"})
 		}
-		m[i.Key] = value
+		m = append(m, ScrapeData{i.Key, value})
 	}
 
-	return m, nil
+	return m
 }
 
 func findElement(body, xpath string) (string, error) {

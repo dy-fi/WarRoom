@@ -3,31 +3,52 @@ package handlers
 import (
 	"log"
 	"net/http"
-	
+
 	"github.com/labstack/echo"
 
 	"github.com/dy-fi/war-room/models"
 	repos "github.com/dy-fi/war-room/repositories"
 )
 
+// Getcity handler - starts websocket connection and reads city
+// func Getcity(c echo.Context) error {
+// 	// get id
+// 	id, err := repos.StringToUint(c.Param("id"))
+// 	if err != nil {
+// 		log.Printf("Couldnt resolve id: %v\n", err)
+// 		return c.JSON(http.StatusBadRequest, "Error: Couldn't resolve city id")
+// 	}
+// 	// get city
+// 	city, err := repos.GetCityByID(id)
+// 	if err != nil {
+// 		log.Println(err)
+// 		return c.JSON(http.StatusOK, "Error: Couldn't get city")
+// 	}
+// 	// sockets
+
+// }
 
 // GetAllCities - get all city documents in database
 func GetAllCities(c echo.Context) error {
-	cities, err := repos.GetAllcities()
+	cities, err := repos.GetAllCities()
 
 	if err != nil {
 		log.Println(err)
-		return c.Render(http.StatusInternalServerError, "error", err)
+		return c.JSON(http.StatusInternalServerError, err)
 	}
 
 	return c.JSON(http.StatusOK, cities)
 }
 
-// Getcities handler - get all cities associated with a user
-func Getcities(c echo.Context) error {
+// GetCities handler - get all cities associated with a user
+func GetCities(c echo.Context) error {
 	// get user id
-	id := c.Param("user")
-	cities, err := repos.GetcitiesByOwner(id)
+	id, err := repos.StringToUint(c.Param("id"))
+	if err != nil {
+		log.Println(err)
+		return c.JSON(http.StatusBadRequest, "Error: Couldn't resolve ID")
+	}
+	cities, err := repos.GetCitiesByOwner(id)
 	// handle errors
 	if err != nil {
 		log.Println(err)
@@ -37,26 +58,16 @@ func Getcities(c echo.Context) error {
 	return c.JSON(http.StatusOK, cities)
 }
 
-// Getcity handler - get one city by ID
-func Getcity(c echo.Context) error {
-	// get id
-	id := c.Param("id")
-	// get city
-	city, err := repos.GetcityByID(id)
+// EditCity handler - update one city by ID
+func EditCity(c echo.Context) error {
+	// get ID param
+	id, err := repos.StringToUint(c.Param("id"))
 	if err != nil {
 		log.Println(err)
-		return c.JSON(http.StatusOK, "Error: Couldn't get city")
+		return c.JSON(http.StatusBadRequest, "Error: Couldn't resolve ID")
 	}
-
-	return c.JSON(http.StatusOK, city)
-}
-
-// Editcity handler - update one city by ID
-func Editcity(c echo.Context) error {
-	// get ID param
-	id := c.Param("id")
 	// get city
-	city, err := repos.GetcityByID(id)
+	city, err := repos.GetCityByID(id)
 	if err != nil {
 		log.Println(err)
 		return c.JSON(http.StatusBadRequest, "Error: Couldn't find city")
@@ -69,15 +80,15 @@ func Editcity(c echo.Context) error {
 	return c.JSON(http.StatusAccepted, city)
 }
 
-// Createcity handler - create one city
-func Createcity(c echo.Context) error {
-	r := models.city{}
+// CreateCity handler - create one city
+func CreateCity(c echo.Context) error {
+	r := models.City{}
 	// couldn't bind request data to model
 	if err := c.Bind(r); err != nil {
 		return c.JSON(http.StatusBadRequest, "Error: Couldn't bind data to city model")
 	}
 	// couldn't create city in database
-	city, err := repos.Createcity(r)
+	city, err := repos.CreateCity(r)
 	if err != nil {
 		log.Println(err)
 		return c.JSON(http.StatusInternalServerError, "Error: Couldn't create city in database")
@@ -85,14 +96,17 @@ func Createcity(c echo.Context) error {
 	return c.JSON(http.StatusCreated, city)
 }
 
-// Deletecity handler - delete one city by ID
-func Deletecity(c echo.Context) error {
-	id := c.Param("id")
-	city, err := repos.GetcityByID(id)
+// DeleteCity handler - delete one city by ID
+func DeleteCity(c echo.Context) error {
+	id, err := repos.StringToUint(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, "Error: couldn't resolve ID")
+	}
+	city, err := repos.GetCityByID(id)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "Error: Couldn't find city to delete")
 	}
-	if repos.Deletecity(city) != nil {
+	if repos.DeleteCity(city) != nil {
 		return c.JSON(http.StatusInternalServerError, "Error: Couldn't delete city")
 	}
 

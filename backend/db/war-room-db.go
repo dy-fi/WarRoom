@@ -2,15 +2,17 @@ package db
 
 import (
 	"fmt"
+
 	"github.com/jinzhu/gorm"
 	// MySql driver
 	_ "github.com/go-sql-driver/mysql"
-	// "github.com/dy-fi/war-room/models"
+
+	"github.com/dy-fi/war-room/models"
 )
 
 // Connect to MySql db
 func Connect() *gorm.DB {
-	db, err := gorm.Open("mysql", "dev:123456@tcp(:3333)/wrdb")
+	db, err := gorm.Open("mysql", "WarRoom:123456@tcp(:3333)/wrdb")
 
 	if err != nil {
 		fmt.Println(err.Error())
@@ -21,7 +23,7 @@ func Connect() *gorm.DB {
 	//defer db.Close() // turn on for testing
 
 	// Turn off in production, turn on in dev
-	// db.AutoMigrate(&models.User{}, &models.Room{})
+	db.AutoMigrate(&models.User{}, &models.City{})
 
 	// make sure connection is available
 	return db

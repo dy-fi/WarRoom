@@ -2,9 +2,20 @@ package repos
 
 import (
 	"strconv"
+	"log"
 
 	"github.com/dy-fi/war-room/models"
 )
+
+// StringToUint helper for id string to uint
+func StringToUint(s string) (uint,error) {
+	intID, err := strconv.Atoi(s)
+	if err != nil {
+		log.Printf("Couldnt resolve id: %v\n", err)
+		return uint(0), err
+	}
+	return uint(intID), nil
+}
 
 // GetAllCities returns a list of every city document in the database
 func GetAllCities() ([]models.City, error) {

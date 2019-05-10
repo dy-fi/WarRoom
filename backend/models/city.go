@@ -7,15 +7,14 @@ import (
 // City model
 type City struct {
 	gorm.Model
-	ID			uint 		`gorm:"primary_key;" json:"ID"`
 	// name of the room
 	Name		string		`json:"Name"`
 	// owner of this specific Room
-	Owner		uint		`gorm:"not null;" json:"owner"`
+	// Owner		uint		`gorm:"not null;" json:"owner"`
 	// original author, will show in parent and child docs
-	Author		uint		`gorm:"not null;" json:"author"`
+	// Author		uint		`gorm:"not null;" json:"author"`
 	// scrapping locations
-	Locations 	[]string	`json:"locations"`
+	Pages		[]Page		`json:"urls"`
 	// custom html blob
 	Blob		string		`json:"blob"`
 }

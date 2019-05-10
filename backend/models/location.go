@@ -9,6 +9,6 @@ type Location struct {
 	gorm.Model
 	// Key ~ name
 	Key		string		`json:"name"`
-	// Address is the tag identifying the location
+	// Address is the Xpath identifying the location
 	Address string		`json:"address"`
 }
