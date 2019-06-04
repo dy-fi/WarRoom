@@ -82,13 +82,13 @@ func EditCity(c echo.Context) error {
 
 // CreateCity handler - create one city
 func CreateCity(c echo.Context) error {
-	r := models.City{}
+	r := new(models.City)
 	// couldn't bind request data to model
 	if err := c.Bind(r); err != nil {
 		return c.JSON(http.StatusBadRequest, "Error: Couldn't bind data to city model")
 	}
 	// couldn't create city in database
-	city, err := repos.CreateCity(r)
+	city, err := repos.CreateCity(*r)
 	if err != nil {
 		log.Println(err)
 		return c.JSON(http.StatusInternalServerError, "Error: Couldn't create city in database")
