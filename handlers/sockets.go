@@ -1,11 +1,11 @@
 package handlers
 
 import (
-	"net/http"
 	"log"
+	"net/http"
 
-	"github.com/labstack/echo"
 	"github.com/gorilla/websocket"
+	"github.com/labstack/echo"
 
 	repos "github.com/dy-fi/war-room/repositories"
 )
@@ -26,7 +26,7 @@ func GetCity(c echo.Context) error {
 		log.Println(err)
 		return c.JSON(http.StatusOK, "Error: Couldn't get city")
 	}
-	
+
 	ws, err := upgrader.Upgrade(c.Response(), c.Request(), nil)
 	if err != nil {
 		return err

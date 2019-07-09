@@ -4,7 +4,7 @@ import (
 	"github.com/antchfx/htmlquery"
 	"github.com/gocolly/colly"
 
-	"github.com/dy-fi/war-room/models"
+	"github.com/dy-fi/war-room/backend/models"
 
 	"strings"
 	"time"

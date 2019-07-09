@@ -4,8 +4,8 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 
-	"github.com/dy-fi/war-room/db"
-	"github.com/dy-fi/war-room/handlers"
+	"github.com/dy-fi/war-room/backend/db"
+	"github.com/dy-fi/war-room/backend/handlers"
 )
 
 func main() {

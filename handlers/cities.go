@@ -6,8 +6,8 @@ import (
 
 	"github.com/labstack/echo"
 
-	"github.com/dy-fi/war-room/models"
-	repos "github.com/dy-fi/war-room/repositories"
+	"github.com/dy-fi/war-room/backend/models"
+	repos "github.com/dy-fi/war-room/backend/repositories"
 )
 
 // Getcity handler - starts websocket connection and reads city

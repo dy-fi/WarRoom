@@ -1,12 +1,12 @@
 package db
-
+ 
 import (
 	"fmt"
+	"github.com/dy-fi/war-room/models"
+
 	// mysql import
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
-
-	"github.com/dy-fi/war-room/models"
 )
 
 // Connect to MySql db
