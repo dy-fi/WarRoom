@@ -2,10 +2,9 @@ package db
 
 import (
 	"fmt"
-
-	"github.com/jinzhu/gorm"
-	// MySql driver
+	// mysql import
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/jinzhu/gorm"
 
 	"github.com/dy-fi/war-room/models"
 )
@@ -20,7 +19,7 @@ func Connect() *gorm.DB {
 		fmt.Println("connected succesfully to db")
 	}
 	db.LogMode(true)
-	//defer db.Close() // turn on for testing
+	defer db.Close() // turn on for testing
 
 	// Turn off in production, turn on in dev
 	db.AutoMigrate(&models.User{}, &models.City{})

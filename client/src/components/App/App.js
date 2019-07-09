@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import '../Router/AppRouter';
+import RoomForm from '../Room-form/Room-form'
 
 class App extends Component {
 
@@ -23,6 +23,8 @@ class App extends Component {
   render() {
     return (<div className="App"> 
       {this.state.cities}
+
+      {RoomForm}
     </div>);
   }
 
