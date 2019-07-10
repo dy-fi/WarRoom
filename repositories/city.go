@@ -1,14 +1,14 @@
 package repos
 
 import (
-	"strconv"
 	"log"
+	"strconv"
 
 	"github.com/dy-fi/war-room/models"
 )
 
 // StringToUint helper for id string to uint
-func StringToUint(s string) (uint,error) {
+func StringToUint(s string) (uint, error) {
 	intID, err := strconv.Atoi(s)
 	if err != nil {
 		log.Printf("Couldnt resolve id: %v\n", err)
@@ -34,7 +34,7 @@ func GetID(city models.City) string {
 // GetCitiesByOwner gets all cities owned by a user indexed by user ID - has many
 func GetCitiesByOwner(id uint) ([]models.City, error) {
 	cities := []models.City{}
-	user  := models.User{}
+	user := models.User{}
 	D.First(&user, id)
 	if err := D.Model(&user).Related(&cities).Error; err != nil {
 		return nil, err
@@ -53,13 +53,13 @@ func GetCityByID(id uint) (models.City, error) {
 
 // CreateCity makes a new city
 func CreateCity(city models.City) (models.City, error) {
-	if err := D.Create(city).Error; err != nil {
+	if err := D.Create(&city).Error; err != nil {
 		return city, err
 	}
 	return city, nil
 }
 
-// DeleteCity removes a city 
+// DeleteCity removes a city
 func DeleteCity(city models.City) error {
 	if err := D.Delete(&city).Error; err != nil {
 		return err

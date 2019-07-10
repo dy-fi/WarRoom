@@ -4,25 +4,23 @@ import (
 	"github.com/antchfx/htmlquery"
 	"github.com/gocolly/colly"
 
-	"github.com/dy-fi/war-room/backend/models"
-
 	"strings"
 	"time"
 )
 
 // ScrapeData is scraped data from the webpage
 type ScrapeData struct {
-	name	string	
-	data	string
+	Name string
+	Data string
 }
 
 // ScrapeAgent builds a scrapper agent and gets all location values from that URL model
-func ScrapeAgent(page models.Page) ([]ScrapeData) {
+func ScrapeAgent(url string, address string) (string, error) {
 	// init collector
 	var s = colly.NewCollector(
 		colly.AllowURLRevisit(),
 		colly.Async(true),
-		colly.AllowedDomains(page.Glob),
+		colly.AllowedDomains(url),
 	)
 
 	// limit rules
@@ -33,26 +31,19 @@ func ScrapeAgent(page models.Page) ([]ScrapeData) {
 	})
 
 	// begin collection
-	s.Visit(page.Glob)
+	s.Visit(url)
 
 	var b string
-	// assign b to the body string 
+	// assign b to the body string
 	s.OnResponse(func(r *colly.Response) {
 		b = string(r.Body)
 	})
 
-	// result list
-	m := []ScrapeData{}
-	// scrape for every location in URL
-	for _, i := range page.Locations {
-		value, err := findElement(b, i.Address)
-		if err != nil {
-			m = append(m, ScrapeData{i.Key, "ERROR"})
-		}
-		m = append(m, ScrapeData{i.Key, value})
+	value, err := findElement(b, address)
+	if err != nil {
+		return err.Error(), err
 	}
-
-	return m
+	return value, nil
 }
 
 func findElement(body, xpath string) (string, error) {

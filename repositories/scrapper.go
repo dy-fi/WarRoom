@@ -7,13 +7,17 @@ import (
 	"github.com/dy-fi/war-room/scrapper"
 )
 
-
 // ScrapeCity for all needed information
 func ScrapeCity(c *models.City) []scrapper.ScrapeData {
 	cityData := []scrapper.ScrapeData{}
-	for _, i := range c.Pages {
-		s := scrapper.ScrapeAgent(i)
-		cityData = append(cityData, s...)
+	for _, i := range c.Places {
+		s, err := scrapper.ScrapeAgent(i.URL, i.Address)
+		if err != nil {
+			scrapeError := scrapper.ScrapeData{i.Key, err.Error()}
+			cityData = append(cityData, scrapeError)
+		}
+		data := scrapper.ScrapeData{i.Key, s}
+		cityData = append(cityData, data)
 	}
 
 	return cityData
@@ -23,6 +27,6 @@ func ScrapeCity(c *models.City) []scrapper.ScrapeData {
 // 	// cron init
 // 	cron := cron.New()
 // 	defer cron.Stop()
-	
+
 // 	c.AddFunc()
 // }

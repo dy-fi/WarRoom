@@ -39,6 +39,7 @@ func GetCity(c echo.Context) error {
 		if err != nil {
 			c.Logger().Error(err)
 		}
+
 		err2 := ws.WriteJSON(repos.ScrapeCity(&city))
 		if err != nil {
 			c.Logger().Error(err2)

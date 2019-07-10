@@ -6,8 +6,8 @@ import (
 
 	"github.com/labstack/echo"
 
-	"github.com/dy-fi/war-room/backend/models"
-	repos "github.com/dy-fi/war-room/backend/repositories"
+	"github.com/dy-fi/war-room/models"
+	repos "github.com/dy-fi/war-room/repositories"
 )
 
 // Getcity handler - starts websocket connection and reads city
@@ -41,7 +41,7 @@ func GetAllCities(c echo.Context) error {
 }
 
 // GetCities handler - get all cities associated with a user
-func GetCities(c echo.Context) error {
+func GetCitiesByUser(c echo.Context) error {
 	// get user id
 	id, err := repos.StringToUint(c.Param("id"))
 	if err != nil {
@@ -83,10 +83,13 @@ func EditCity(c echo.Context) error {
 // CreateCity handler - create one city
 func CreateCity(c echo.Context) error {
 	r := new(models.City)
-	// couldn't bind request data to model
-	if err := c.Bind(r); err != nil {
-		return c.JSON(http.StatusBadRequest, "Error: Couldn't bind data to city model")
+
+	// Manually set values
+	r = &models.City{
+		Name: c.FormValue("name"),
+		// Place: TODO
 	}
+
 	// couldn't create city in database
 	city, err := repos.CreateCity(*r)
 	if err != nil {
@@ -100,7 +103,7 @@ func CreateCity(c echo.Context) error {
 func DeleteCity(c echo.Context) error {
 	id, err := repos.StringToUint(c.Param("id"))
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, "Error: couldn't resolve ID")
+		return c.JSON(http.StatusBadRequest, "Couldn't find city to delete")
 	}
 	city, err := repos.GetCityByID(id)
 	if err != nil {
