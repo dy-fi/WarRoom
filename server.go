@@ -33,7 +33,7 @@ func main() {
 	// rooms
 	e.GET("/cities/all", handlers.GetAllCities)
 	e.GET("/cities/ws/:id", handlers.GetCity)
-	e.GET("/cities", handlers.GetCities)
+	e.GET("/cities", handlers.GetAllCities)
 	e.PUT("/cities/:id/edit", handlers.EditCity)
 	e.POST("/cities", handlers.CreateCity)
 	e.DELETE("/cities/:id", handlers.DeleteCity)
