@@ -24,7 +24,7 @@ func Connect() *gorm.DB {
 	// defer db.Close() // turn on for testing
 
 	// Turn off in production, turn on in dev
-	db.AutoMigrate(&models.User{}, &models.City{})
+	db.AutoMigrate(&models.City{})
 
 	// make sure connection is available
 	return db

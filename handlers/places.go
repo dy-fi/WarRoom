@@ -18,7 +18,7 @@ func GetLocationByID(c echo.Context) error {
 		log.Println(err)
 		return c.JSON(http.StatusBadRequest, "Error: Couldn't resolve ID")
 	}
-	cities, err := repos.GetCitiesByOwner(id)
+	cities, err := repos.GetCityByID(id)
 	// handle errors
 	if err != nil {
 		log.Println(err)

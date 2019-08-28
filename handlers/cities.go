@@ -28,7 +28,7 @@ import (
 
 // }
 
-// GetAllCities - get all city documents in database
+// GetAllCities - get all cities in database
 func GetAllCities(c echo.Context) error {
 	cities, err := repos.GetAllCities()
 
@@ -40,23 +40,36 @@ func GetAllCities(c echo.Context) error {
 	return c.JSON(http.StatusOK, cities)
 }
 
-// GetCities handler - get all cities associated with a user
-func GetCitiesByUser(c echo.Context) error {
-	// get user id
-	id, err := repos.StringToUint(c.Param("id"))
-	if err != nil {
-		log.Println(err)
-		return c.JSON(http.StatusBadRequest, "Error: Couldn't resolve ID")
-	}
-	cities, err := repos.GetCitiesByOwner(id)
-	// handle errors
-	if err != nil {
-		log.Println(err)
-		return c.JSON(http.StatusOK, "Error: Couldn't locate user document")
-	}
+// GetCityByID - get a single city by its ID
+func GetCityByID(c echo.Context) error {
+	id, _ := repos.StringToUint(c.Param("id"))
 
-	return c.JSON(http.StatusOK, cities)
+	city, err := repos.GetCityByID(id)
+	if err != nil {
+		log.Println("Error: ")
+		log.Println(err)
+		return c.JSON(http.StatusBadRequest, "Error: Couldn't find that city")
+	}
+	return c.JSON(http.StatusOK, city)
 }
+
+// // GetCities handler - get all cities associated with a user
+// func GetCitiesByUser(c echo.Context) error {
+// 	// get user id
+// 	id, err := repos.StringToUint(c.Param("id"))
+// 	if err != nil {
+// 		log.Println(err)
+// 		return c.JSON(http.StatusBadRequest, "Error: Couldn't resolve ID")
+// 	}
+// 	cities, err := repos.GetCitiesByOwner(id)
+// 	// handle errors
+// 	if err != nil {
+// 		log.Println(err)
+// 		return c.JSON(http.StatusOK, "Error: Couldn't locate user document")
+// 	}
+
+// 	return c.JSON(http.StatusOK, cities)
+// }
 
 // EditCity handler - update one city by ID
 func EditCity(c echo.Context) error {

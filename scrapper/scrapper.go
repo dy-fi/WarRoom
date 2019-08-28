@@ -8,14 +8,16 @@ import (
 	"time"
 )
 
-// ScrapeData is scraped data from the webpage
-type ScrapeData struct {
-	Name string
-	Data string
+// ScrapedData is scraped data from the webpage
+type ScrapedData struct {
+	// Name reference
+	Name string `json:"name"`
+	// Data body
+	Data string `json:"data"`
 }
 
-// ScrapeAgent builds a scrapper agent and gets all location values from that URL model
-func ScrapeAgent(url string, address string) (string, error) {
+// Agent builds a scrapper agent and gets all location values from that URL model
+func Agent(url string, address string) (string, error) {
 	// init collector
 	var s = colly.NewCollector(
 		colly.AllowURLRevisit(),

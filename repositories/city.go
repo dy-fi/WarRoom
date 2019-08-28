@@ -31,21 +31,21 @@ func GetID(city models.City) string {
 	return strconv.Itoa(int(city.ID))
 }
 
-// GetCitiesByOwner gets all cities owned by a user indexed by user ID - has many
-func GetCitiesByOwner(id uint) ([]models.City, error) {
-	cities := []models.City{}
-	user := models.User{}
-	D.First(&user, id)
-	if err := D.Model(&user).Related(&cities).Error; err != nil {
-		return nil, err
-	}
-	return cities, nil
-}
+// // GetCitiesByOwner gets all cities owned by a user indexed by user ID - has many
+// func GetCitiesByOwner(id uint) ([]models.City, error) {
+// 	cities := []models.City{}
+// 	user := models.User{}
+// 	D.First(&user, id)
+// 	if err := D.Model(&user).Related(&cities).Error; err != nil {
+// 		return nil, err
+// 	}
+// 	return cities, nil
+// }
 
 // GetCityByID gets a city document indexed by ID
 func GetCityByID(id uint) (models.City, error) {
 	city := models.City{}
-	if err := D.First(&city, id).Error; err != nil {
+	if err := D.First(&models.City{}, "ID = ?", id).Error; err != nil {
 		return city, err
 	}
 	return city, nil
