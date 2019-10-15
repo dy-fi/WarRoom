@@ -7,8 +7,8 @@ import (
 // Location is a webscrapper address
 type Location struct {
 	gorm.Model
-	// Key ~ name
-	Key string `json:"name"`
+	// Name is the location reference
+	Name string `json:"name"`
 	// URL is the requested url
 	URL string `json:"url"`
 	// Address is the Xpath identifying the location
@@ -16,5 +16,5 @@ type Location struct {
 	// State is the last recorded values for this location (10 to start)
 	State []string `json:"state"`
 	// Style is the graph style
-	Style string
+	Style string `json:"style"`
 }

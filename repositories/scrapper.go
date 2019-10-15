@@ -8,15 +8,15 @@ import (
 )
 
 // ScrapeCity for all needed information
-func ScrapeCity(c *models.City) []scrapper.ScrapeData {
-	cityData := []scrapper.ScrapeData{}
+func ScrapeCity(c *models.City) []scrapper.ScrapedData {
+	cityData := []scrapper.ScrapedData{}
 	for _, i := range c.Places {
-		s, err := scrapper.ScrapeAgent(i.URL, i.Address)
+		s, err := scrapper.Agent(i.URL, i.Address)
 		if err != nil {
-			scrapeError := scrapper.ScrapeData{i.Key, err.Error()}
+			scrapeError := scrapper.ScrapedData{i.Name, err.Error()}
 			cityData = append(cityData, scrapeError)
 		}
-		data := scrapper.ScrapeData{i.Key, s}
+		data := scrapper.ScrapedData{i.Name, s}
 		cityData = append(cityData, data)
 	}
 

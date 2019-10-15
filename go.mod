@@ -6,7 +6,7 @@ require (
 	github.com/PuerkitoBio/goquery v1.5.0 // indirect
 	github.com/antchfx/htmlquery v1.0.0
 	github.com/antchfx/xmlquery v1.0.0 // indirect
-	github.com/antchfx/xpath v1.0.0 // indirect
+	github.com/antchfx/xpath v1.0.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/go-sql-driver/mysql v1.4.1
 	github.com/gobwas/glob v0.2.3 // indirect

@@ -45,7 +45,7 @@ func GetID(city models.City) string {
 // GetCityByID gets a city document indexed by ID
 func GetCityByID(id uint) (models.City, error) {
 	city := models.City{}
-	if err := D.First(&city, id).Error; err != nil {
+	if err := D.First(&models.City{}, "ID = ?", id).Error; err != nil {
 		return city, err
 	}
 	return city, nil

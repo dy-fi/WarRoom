@@ -32,8 +32,10 @@ func main() {
 	// ==================== ROUTES ==================== //
 	// rooms
 	e.GET("/cities/all", handlers.GetAllCities)
+	e.GET("/cities/:id", handlers.GetCityByID)
 	e.GET("/cities/ws/:id", handlers.GetCity)
 	e.GET("/cities", handlers.GetAllCities)
+	// e.GET("/cities", handlers.GetCitiesByUser)
 	e.PUT("/cities/:id/edit", handlers.EditCity)
 	e.POST("/cities", handlers.CreateCity)
 	e.DELETE("/cities/:id", handlers.DeleteCity)
