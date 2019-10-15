@@ -1,11 +1,12 @@
-package scrapper
+package main
 
 import (
 	"github.com/antchfx/htmlquery"
-	"github.com/gocolly/colly"
 
-	"strings"
-	"time"
+	"fmt"
+	// "os"
+	// "strings"
+	// "time"
 )
 
 // ScrapedData is scraped data from the webpage
@@ -16,46 +17,30 @@ type ScrapedData struct {
 	Data string `json:"data"`
 }
 
-// Agent builds a scrapper agent and gets all location values from that URL model
-func Agent(url string, address string) (string, error) {
-	// init collector
-	var s = colly.NewCollector(
-		colly.AllowURLRevisit(),
-		colly.Async(true),
-		colly.AllowedDomains(url),
-	)
-
-	// limit rules
-	s.Limit(&colly.LimitRule{
-		// tweak later if needed
-		Delay:       1 * time.Second,
-		RandomDelay: 1 * time.Second,
-	})
-
-	// begin collection
-	s.Visit(url)
-
-	var b string
-	// assign b to the body string
-	s.OnResponse(func(r *colly.Response) {
-		b = string(r.Body)
-	})
-
-	value, err := findElement(b, address)
-	if err != nil {
-		return err.Error(), err
-	}
-	return value, nil
-}
-
-func findElement(body, xpath string) (string, error) {
-	doc, err := htmlquery.Parse(strings.NewReader(body))
+func scrapeXPath(url, path string) (string, error) {
+	doc, err := htmlquery.LoadURL(url)
 	if err != nil {
 		return "-1", err
 	}
 
-	element := htmlquery.FindOne(doc, xpath)
-	text := htmlquery.InnerText(element)
+	element := htmlquery.FindOne(doc, path)
+	text := ""
+
+	if element != nil {
+		text = htmlquery.InnerText(element)
+	}
 
 	return text, nil
+}
+
+func main() {
+	url := "https://weather.com/weather/today/l/c1535f42ba5fc52449e416514aca69b3b2a16aae4b89abd6c92e662f7a89c02f"
+	xpath := "//*[@id=\"main-Nowcard-92c6937d-b8c3-4240-b06c-9da9a8b0d22b\"]/div/div/section/div[3]/table/tbody/tr[1]/td/span"
+	data, err := scrapeXPath(url, xpath)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("Response: \n")
+	fmt.Print(data)
 }
