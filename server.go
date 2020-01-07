@@ -1,18 +1,61 @@
 package main
 
 import (
+	"errors"
+	"io"
+
+	"github.com/flosch/pongo2"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 
-	"github.com/dy-fi/war-room/db"
 	"github.com/dy-fi/war-room/handlers"
 )
 
+// Renderer serves templates with the pongo engine
+type Renderer struct {
+	Debug bool
+}
+
+// Render is the Pongo2 renderer
+func (r Renderer) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
+
+	var ctx pongo2.Context
+
+	if data != nil {
+		var ok bool
+		ctx, ok = data.(pongo2.Context)
+
+		if !ok {
+			return errors.New("no pongo2.Context data was passed")
+		}
+	}
+
+	var t *pongo2.Template
+	var err error
+
+	if r.Debug {
+		t, err = pongo2.FromFile(name)
+	} else {
+		t, err = pongo2.FromCache(name)
+	}
+
+	if err != nil {
+		return err
+	}
+
+	return t.ExecuteWriter(ctx, w)
+}
+
 func main() {
+	// ================== RENDERER ================== //
+	renderer := Renderer{
+		Debug: true,
+	}
+
 	// ==================== INIT ==================== //
 	e := echo.New()
-	e.Static("/", "public")
-
+	e.Renderer = renderer
+	e.Static("/static", "static")
 	// ==================== MIDDLEWARE ==================== //
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
@@ -31,9 +74,10 @@ func main() {
 
 	// ==================== ROUTES ==================== //
 	// rooms
-	e.GET("/cities/all", handlers.GetAllCities)
+	e.GET("/", handlers.Index)
+	e.GET("/rooms", handlers.GetAllCities)
 	e.GET("/cities/:id", handlers.GetCityByID)
-	e.GET("/cities/ws/:id", handlers.GetCity)
+	// e.GET("/cities/ws/:id", handlers.GetCity)
 	e.GET("/cities", handlers.GetAllCities)
 	// e.GET("/cities", handlers.GetCitiesByUser)
 	e.PUT("/cities/:id/edit", handlers.EditCity)
@@ -43,5 +87,4 @@ func main() {
 
 	// ==================== START ==================== //
 	e.Logger.Fatal(e.Start(":8000"))
-	db.Connect()
 }

@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block head %}
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.4.5/socket.io.min.js"></script>
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+
+{% endblock %}
+
+
+{% block content %}
+<div class='row' style='padding-top:10px'>
+    <a href='/' class='btn btn-danger'>Home</a>
+
+    <div class='col-sm-12' style='text-align:center;'>
+        <h1>{{ room.title }}</h1> 
+        <h1 id="live-title">Connecting...</h1>
+    </div>
+</div>
+
+<hr>
+
+<div class='row'>
+    {% for place in places %}
+        {% with place = place %}
+            <div id='place-wrapper'>
+                <div id="chart-wrapper col-sm-5">
+                    <div id='{{place._id}}-graph' style="height:200px; width:200px"></div>
+                    <p id='{{place._id}}-latest'>Latest point: </p>
+                </div>
+            </div>
+        {% endwith %}
+    {% endfor %}
+
+</div>
+<hr>
+<div class='row'>
+    <!-- NEW PLACE FORM -->
+    <div class='place-form col-sm-5'>
+        
+        <img src='{{url_for('static', filename='finder-icon.png')}}' style='padding-top:3px; padding-left:0px; margin-top: 0px; margin-left: -10px; border: 0; height:80px; width:80px;'>
+
+        <form method='POST' action='/place'>
+            <input type='hidden' value='{{ room._id }}' name='room_id'>
+            {% include "place-form.html" %}
+        
+                <!-- BUTTON -->
+            <div class='form-group col-sm-7'>
+                <button class='btn btn-primary btn-block' type='submit'>Add a new target</button>
+            </div> 
+        </form>
+    </div>
+
+    <div class='col-sm-1'>
+        <div id='vertical-divider'></div>
+    </div>
+    
+    <!-- SETTINGS -->
+    <div class='col-sm-5'>
+        <img src='{{ url_for('static', filename='settings-icon.png') }}' style='height:60px; width:60px; margin-top:15px; margin-left:0px; padding: 0px 0px 4px;'>
+        <form method='POST' action='/edit-room'>
+            <div class='form-group'>
+                <label for='title'>Change Room Title</label>
+                <input class='form-control' name='title' type='text' value='{{ room.title }}'> 
+            </div>
+        </form>
+        <form method='POST' action='/delete-room'>
+            <input type='hidden' value='{{ room._id }}'>
+            <div class='form-group'>
+                <button class='btn btn-block btn-danger'>Delete Room</button>
+            </div>
+        </form>
+    </div>
+   
+</div>
+
+
+    
+{% endblock %}
+{% block scripts %}
+
+<script>
+    // Thus begins the weirdest but most solid front end JS I've ever
+    // written.  I mixed templating syntax with JS
+    // code (WHICH YOU SHOULD NEVER DO) and mapped everything with
+    // dynamically named variables to produce as many charts as you want.  
+    // Client Side you won't see the templating, just the ugly un-DRY 
+    // looking code it generates.  
+
+    // Globals
+    var charts = {}
+    var points = {}
+    var dataLength = 20;
+
+    // for y value
+    function getTimestamp() {
+        var ts = Math.round((new Date()).getTime() / 1000);
+        return ts
+    }
+
+    function updateChart(address, point) {
+        points[address].push({
+            x: point.x,
+            y: point.y
+        });
+
+        if (points[address].length > dataLength) {
+            points[address].shift();
+        }
+
+        charts[address].render();
+    }
+
+    // SOCKETS
+    socket.on('connect', function() {
+        console.log("socket connected")
+        document.getElementById('live-title').innerHTML = "Connected!";
+    });
+
+    socket.on('point', (data) => {
+        var y = data.y
+        console.log(y)
+
+        var newPoint = { x: data.time, y: y}
+
+        address = btoa(data.name);
+        updateChart(address, newPoint)
+    });
+
+    socket.on('error', function(e) {
+        console.log(e);
+    });
+
+    window.onload = function() {
+        socket.emit('room', {room_id: "{{room._id}}" })
+
+        {% for place in places %}
+
+            var name = "{{place.name}}"
+            address = btoa(name)
+
+            points[address] = []
+            
+            charts[address] = new CanvasJS.Chart("{{place._id}}-graph", {
+                title: {
+                    text: "{{place.name}}"
+                },
+                axisY: {
+                    includeZero: false
+                },
+                data: [{
+                    type: "line",
+                    dataPoints: points[address],
+                }]
+            });
+
+        {% endfor %} 
+
+
+        window.addEventListener("beforeunload", function() { 
+            socket.emit('stop', {room_id: "{{room._id}}" })
+        });
+    };
+
+    
+
+</script>
+
+{% endblock %}

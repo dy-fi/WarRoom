@@ -1,16 +1,19 @@
 package models
 
 import (
-	"github.com/jinzhu/gorm"
+	"github.com/globalsign/mgo/bson"
+
 )
 
 // City model
 type City struct {
-	gorm.Model
+	ID bson.ObjectId `json:"id" bson:"_id,omitempty"`
 	// name of the room
-	Name		string		`json:"Name"`
+	Name string `json:"name"`
 	// original author, will show in parent and child docs
-	Author		string		`gorm:"not null;" json:"author"`
+	Author string `json:"author"`
 	// scrapping locations
-	Places		[]Location	`gorm:"default:'', foreignkey:ID;" json:"places"`
+	Places []bson.ObjectId `json:"places"`
+	// output type
+	Output bool `json:"output"`
 }

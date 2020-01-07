@@ -30,19 +30,14 @@ import (
 
 // GetAllCities - get all cities in database
 func GetAllCities(c echo.Context) error {
-	cities, err := repos.GetAllCities()
+	cities := repos.GetAllCities()
 
-	if err != nil {
-		log.Println(err)
-		return c.JSON(http.StatusInternalServerError, err)
-	}
-
-	return c.JSON(http.StatusOK, cities)
+	return c.Render(http.StatusOK, "rooms.html", cities)
 }
 
 // GetCityByID - get a single city by its ID
 func GetCityByID(c echo.Context) error {
-	id, _ := repos.StringToUint(c.Param("id"))
+	id := c.Param("id")
 
 	city, err := repos.GetCityByID(id)
 	if err != nil {
@@ -74,23 +69,11 @@ func GetCityByID(c echo.Context) error {
 // EditCity handler - update one city by ID
 func EditCity(c echo.Context) error {
 	// get ID param
-	id, err := repos.StringToUint(c.Param("id"))
-	if err != nil {
-		log.Println(err)
-		return c.JSON(http.StatusBadRequest, "Error: Couldn't resolve ID")
-	}
-	// get city
-	city, err := repos.GetCityByID(id)
-	if err != nil {
-		log.Println(err)
-		return c.JSON(http.StatusBadRequest, "Error: Couldn't find city")
-	}
-	// bind
-	if err := c.Bind(&city).Error; err != nil {
+	id := c.Param("id")
 
-	}
+	repos.UpdateCity(id, c.FormParams)
 
-	return c.JSON(http.StatusAccepted, city)
+	return c.Render(http.StatusAccepted, "/target/"+id, nil)
 }
 
 // CreateCity handler - create one city
@@ -114,11 +97,10 @@ func CreateCity(c echo.Context) error {
 
 // DeleteCity handler - delete one city by ID
 func DeleteCity(c echo.Context) error {
-	id, err := repos.StringToUint(c.Param("id"))
+	city, err := repos.GetCityByID(c.Param("id"))
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "Couldn't find city to delete")
 	}
-	city, err := repos.GetCityByID(id)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "Error: Couldn't find city to delete")
 	}

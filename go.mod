@@ -3,20 +3,20 @@ module github.com/dy-fi/war-room
 go 1.12
 
 require (
-	github.com/PuerkitoBio/goquery v1.5.0 // indirect
-	github.com/antchfx/htmlquery v1.0.0
-	github.com/antchfx/xmlquery v1.0.0 // indirect
-	github.com/antchfx/xpath v1.0.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
-	github.com/go-sql-driver/mysql v1.4.1
-	github.com/gobwas/glob v0.2.3 // indirect
-	github.com/gocolly/colly v1.2.0
-	github.com/gorilla/websocket v1.4.0
-	github.com/jinzhu/gorm v1.9.10
-	github.com/kennygrant/sanitize v1.2.4 // indirect
+	github.com/flosch/pongo2 v0.0.0-20190707114632-bbf5a6c351f4
+	github.com/globalsign/mgo v0.0.0-20181015135952-eeefdecb41b8
+	github.com/go-check/check v0.0.0-20190902080502-41f04d3bba15 // indirect
+	github.com/juju/errors v0.0.0-20190930114154-d42613fe1ab9 // indirect
+	github.com/juju/loggo v0.0.0-20190526231331-6e530bcce5d8 // indirect
+	github.com/juju/testing v0.0.0-20191001232224-ce9dec17d28b // indirect
 	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/gommon v0.2.9 // indirect
-	github.com/saintfish/chardet v0.0.0-20120816061221-3af4cd4741ca // indirect
-	github.com/temoto/robotstxt v1.1.1 // indirect
-	gopkg.in/validator.v2 v2.0.0-20180514200540-135c24b11c19
+	golang.org/x/crypto v0.0.0-20191128160524-b544559bb6d1 // indirect
+	golang.org/x/net v0.0.0-20191126235420-ef20fe5d7933 // indirect
+	golang.org/x/sys v0.0.0-20191128015809-6d18c012aee9 // indirect
+	golang.org/x/text v0.3.2 // indirect
+	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
+	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22 // indirect
+	gopkg.in/yaml.v2 v2.2.7 // indirect
 )

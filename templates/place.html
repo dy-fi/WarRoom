@@ -1,0 +1,12 @@
+<div id='place-card'>
+        <p>{{ place["name"] }}</p>
+        <p>values: 
+            <br>
+            {% for value in place["values"] %}
+                <div col-sm-1>
+                        {{value.data}}
+                </div>
+                
+            {% endfor %}
+        </p>
+</div>

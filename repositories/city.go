@@ -1,34 +1,33 @@
 package repos
 
 import (
-	"log"
-	"strconv"
+	"errors"
 
 	"github.com/dy-fi/war-room/models"
 )
 
-// StringToUint helper for id string to uint
-func StringToUint(s string) (uint, error) {
-	intID, err := strconv.Atoi(s)
-	if err != nil {
-		log.Printf("Couldnt resolve id: %v\n", err)
-		return uint(0), err
-	}
-	return uint(intID), nil
+var cities = DB.C("cities")
+
+// GetCityID returns an Id given a city model
+func GetCityID(city models.City) string {
+	return string(city.ID)
 }
 
 // GetAllCities returns a list of every city document in the database
-func GetAllCities() ([]models.City, error) {
-	cities := []models.City{}
-	if err := D.Find(&cities).Error; err != nil {
-		return cities, err
+func GetAllCities() []models.City {
+	result := []models.City{}
+	if err := cities.Find(nil).All(&result); err != nil {
+		panic(err.Error())
 	}
-	return cities, nil
+	return result
 }
 
-// GetID of a city
-func GetID(city models.City) string {
-	return strconv.Itoa(int(city.ID))
+// UpdateCity updates a city
+func UpdateCity(id string, data interface{}) error {
+	if err := cities.UpdateId(id, data); err != nil {
+		return err
+	}
+	return nil
 }
 
 // // GetCitiesByOwner gets all cities owned by a user indexed by user ID - has many
@@ -43,17 +42,18 @@ func GetID(city models.City) string {
 // }
 
 // GetCityByID gets a city document indexed by ID
-func GetCityByID(id uint) (models.City, error) {
+func GetCityByID(id string) (models.City, error) {
 	city := models.City{}
-	if err := D.First(&models.City{}, "ID = ?", id).Error; err != nil {
-		return city, err
+	if err := cities.FindId(id).One(&city); err != nil {
+		return city, errors.New("Couldn't find city")
 	}
+
 	return city, nil
 }
 
 // CreateCity makes a new city
 func CreateCity(city models.City) (models.City, error) {
-	if err := D.Create(&city).Error; err != nil {
+	if err := cities.Insert(&city); err != nil {
 		return city, err
 	}
 	return city, nil
@@ -61,8 +61,9 @@ func CreateCity(city models.City) (models.City, error) {
 
 // DeleteCity removes a city
 func DeleteCity(city models.City) error {
-	if err := D.Delete(&city).Error; err != nil {
+	if err := cities.RemoveId(city.ID); err != nil {
 		return err
 	}
 	return nil
 }
+
