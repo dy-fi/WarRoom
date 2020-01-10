@@ -14,8 +14,7 @@ import (
 
 // Connect to MySql db
 func Connect() *mgo.Database {
-	// parseTime to convert gorm createdAt ISO to sql created_at uint8[]
-	session, err := mgo.Dial("mongodb://localhost:27017/wrdb")
+	session, err := mgo.Dial("mongodb://db:27017/wrdb")
 	if err != nil {
 		fmt.Println(err)
 	}

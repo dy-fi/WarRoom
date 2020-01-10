@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo"
-
+	"github.com/flosch/pongo2"
 	"github.com/dy-fi/war-room/models"
 	repos "github.com/dy-fi/war-room/repositories"
 )
@@ -32,7 +32,15 @@ import (
 func GetAllCities(c echo.Context) error {
 	cities := repos.GetAllCities()
 
-	return c.Render(http.StatusOK, "rooms.html", cities)
+	if cities == nil {
+		return c.Render(http.StatusOK, "./templates/rooms.html", nil)
+	}
+
+	data := pongo2.Context{
+		"cities": cities, 
+	}
+
+	return c.Render(http.StatusOK, "./templates/rooms.html", data)
 }
 
 // GetCityByID - get a single city by its ID
@@ -76,6 +84,11 @@ func EditCity(c echo.Context) error {
 	return c.Render(http.StatusAccepted, "/target/"+id, nil)
 }
 
+// NewCityForm renders the new room form
+func NewCityForm(c echo.Context) error {
+	return c.Render(http.StatusOK, "./templates/room-form.html", nil)
+}
+
 // CreateCity handler - create one city
 func CreateCity(c echo.Context) error {
 	r := new(models.City)
@@ -92,7 +105,9 @@ func CreateCity(c echo.Context) error {
 		log.Println(err)
 		return c.JSON(http.StatusInternalServerError, "Error: Couldn't create city in database")
 	}
-	return c.JSON(http.StatusCreated, city)
+
+	// render 
+	return c.Render(http.StatusCreated, "./templates/live-room-2.html", city.ToPongoContext)
 }
 
 // DeleteCity handler - delete one city by ID

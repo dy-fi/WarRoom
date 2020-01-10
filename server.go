@@ -1,7 +1,7 @@
 package main
 
 import (
-	"errors"
+	//"errors"
 	"io"
 
 	"github.com/flosch/pongo2"
@@ -26,7 +26,7 @@ func (r Renderer) Render(w io.Writer, name string, data interface{}, c echo.Cont
 		ctx, ok = data.(pongo2.Context)
 
 		if !ok {
-			return errors.New("no pongo2.Context data was passed")
+			ctx = nil 
 		}
 	}
 
@@ -76,12 +76,12 @@ func main() {
 	// rooms
 	e.GET("/", handlers.Index)
 	e.GET("/rooms", handlers.GetAllCities)
-	e.GET("/cities/:id", handlers.GetCityByID)
+	e.GET("/rooms/:id", handlers.GetCityByID)
 	// e.GET("/cities/ws/:id", handlers.GetCity)
-	e.GET("/cities", handlers.GetAllCities)
 	// e.GET("/cities", handlers.GetCitiesByUser)
 	e.PUT("/cities/:id/edit", handlers.EditCity)
-	e.POST("/cities", handlers.CreateCity)
+	e.GET("/room/new", handlers.NewCityForm)
+	e.POST("/room/new", handlers.CreateCity)
 	e.DELETE("/cities/:id", handlers.DeleteCity)
 	// authentication
 

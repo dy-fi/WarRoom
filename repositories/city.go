@@ -10,7 +10,7 @@ var cities = DB.C("cities")
 
 // GetCityID returns an Id given a city model
 func GetCityID(city models.City) string {
-	return string(city.ID)
+	return string(city.Id)
 }
 
 // GetAllCities returns a list of every city document in the database
@@ -61,7 +61,7 @@ func CreateCity(city models.City) (models.City, error) {
 
 // DeleteCity removes a city
 func DeleteCity(city models.City) error {
-	if err := cities.RemoveId(city.ID); err != nil {
+	if err := cities.RemoveId(city.Id); err != nil {
 		return err
 	}
 	return nil
