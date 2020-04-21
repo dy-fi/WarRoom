@@ -1,32 +1,48 @@
 package repos
 
 import (
-	"fmt"
 
 	// mysql import
 	// _ "github.com/go-sql-driver/mysql"
 
-	// "github.com/jinzhu/gorm/dialects/postgres"//
-	// "github.com/jinzhu/gorm"
+	// gorm dialect
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 
-	"github.com/globalsign/mgo"
+	"github.com/jinzhu/gorm"
+
+	// "github.com/globalsign/mgo"
 )
 
-// Connect to MySql db
-func Connect() *mgo.Database {
-	session, err := mgo.Dial("mongodb://db:27017/wrdb")
+// Connect to mongo db
+// func Connect() *mgo.Database {
+// 	session, err := mgo.Dial("mongodb://db:27017/wrdb")
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	}
+
+// 	db := session.DB("wrdb")
+// 	if err = session.Ping(); err != nil {
+// 		fmt.Print("Couldn't connect to db")
+// 	}
+// 	mgo.SetDebug(true)
+
+// 	return db
+// }
+
+// // DB is the database reference
+// var DB *mgo.Database = Connect()
+
+// Connect returns the DB client object
+func Connect() *gorm.DB {
+	db, err := gorm.Open("postgres", "host=localhost port=5432 user=postgres dbname=wrdb")
+
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
 	}
 
-	db := session.DB("wrdb")
-	if err = session.Ping(); err != nil {
-		fmt.Print("Couldn't connect to db")
-	}
-	mgo.SetDebug(true)
-
+	defer db.Close()
 	return db
 }
 
-// DB is the database reference
-var DB *mgo.Database = Connect()
+// DB object exposed to package
+var DB = Connect()

@@ -1,10 +1,11 @@
 package models
 
-// "github.com/jinzhu/gorm"
+import "github.com/jinzhu/gorm"
 // "github.com/lib/pq"
 
 // Place is a webscrapper address
 type Place struct {
+	gorm.Model
 	// Name is the location reference
 	Name string `json:"name"`
 	// URL is the requested url

@@ -3,10 +3,12 @@ package models
 import (
 	"github.com/globalsign/mgo/bson"
 	"github.com/flosch/pongo2"
+	"github.com/jinzhu/gorm"
 )
 
 // City model
 type City struct {
+	gorm.Model
 	Id      bson.ObjectId `json:"id" bson:"_id,omitempty"`
 	// name of the room
 	Name string `json:"name"`

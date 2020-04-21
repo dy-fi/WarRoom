@@ -12,10 +12,11 @@ services:
             - db
 
     db:
-        container_name: mongo
-        image: mongo:latest
+        container_name: postgres
+        image: postgres:latest
         ports:
-            - "27017:27017"
+            - "5432:5432"
+        entrypoint: psql -U postgres -c "create database wrdb"
         volumes:
             - db:/data/db
 

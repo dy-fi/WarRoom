@@ -6,7 +6,7 @@ import (
 	"github.com/dy-fi/war-room/models"
 )
 
-var cities = DB.C("cities")
+DB.AutoMigrate(&models.City)
 
 // GetCityID returns an Id given a city model
 func GetCityID(city models.City) string {
@@ -16,18 +16,15 @@ func GetCityID(city models.City) string {
 // GetAllCities returns a list of every city document in the database
 func GetAllCities() []models.City {
 	result := []models.City{}
-	if err := cities.Find(nil).All(&result); err != nil {
+	if err := DB.Find(&city); err != nil {
 		panic(err.Error())
 	}
 	return result
 }
 
 // UpdateCity updates a city
-func UpdateCity(id string, data interface{}) error {
-	if err := cities.UpdateId(id, data); err != nil {
-		return err
-	}
-	return nil
+func UpdateCity(city *models.City) {
+	DB.Save(&city)
 }
 
 // // GetCitiesByOwner gets all cities owned by a user indexed by user ID - has many
@@ -53,17 +50,14 @@ func GetCityByID(id string) (models.City, error) {
 
 // CreateCity makes a new city
 func CreateCity(city models.City) (models.City, error) {
-	if err := cities.Insert(&city); err != nil {
-		return city, err
+	if DB.NewRecord(city) {
+		DB.Create(&city)
 	}
-	return city, nil
 }
 
 // DeleteCity removes a city
 func DeleteCity(city models.City) error {
-	if err := cities.RemoveId(city.Id); err != nil {
-		return err
-	}
-	return nil
+	// hard delete
+	db.Delete(&city)
 }
 
