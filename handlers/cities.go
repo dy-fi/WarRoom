@@ -78,9 +78,10 @@ func GetCityByID(c echo.Context) error {
 func EditCity(c echo.Context) error {
 	// get ID param
 	id := c.Param("id")
+	city := repos.GetCityById(id)
 
-	repos.UpdateCity(id, c.FormParams)
-
+	repos.UpdateCity(&city, c.FormParams)
+	
 	return c.Render(http.StatusAccepted, "/target/"+id, nil)
 }
 

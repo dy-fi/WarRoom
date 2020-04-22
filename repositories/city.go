@@ -4,9 +4,8 @@ import (
 	"errors"
 
 	"github.com/dy-fi/war-room/models"
-)
 
-DB.AutoMigrate(&models.City)
+)
 
 // GetCityID returns an Id given a city model
 func GetCityID(city models.City) string {
@@ -15,16 +14,14 @@ func GetCityID(city models.City) string {
 
 // GetAllCities returns a list of every city document in the database
 func GetAllCities() []models.City {
-	result := []models.City{}
-	if err := DB.Find(&city); err != nil {
-		panic(err.Error())
-	}
+	var result []models.City
+	DB.Find(&result)
 	return result
 }
 
 // UpdateCity updates a city
-func UpdateCity(city *models.City) {
-	DB.Save(&city)
+func UpdateCity(city *models.City, updates map[string]interface{}) {
+	DB.Model(&city).Updates(updates)
 }
 
 // // GetCitiesByOwner gets all cities owned by a user indexed by user ID - has many
@@ -41,7 +38,7 @@ func UpdateCity(city *models.City) {
 // GetCityByID gets a city document indexed by ID
 func GetCityByID(id string) (models.City, error) {
 	city := models.City{}
-	if err := cities.FindId(id).One(&city); err != nil {
+	if err := DB.First(&city, id); err != nil {
 		return city, errors.New("Couldn't find city")
 	}
 
@@ -52,12 +49,20 @@ func GetCityByID(id string) (models.City, error) {
 func CreateCity(city models.City) (models.City, error) {
 	if DB.NewRecord(city) {
 		DB.Create(&city)
+	} else {
+		return city, errors.New("City already exists")
 	}
+
+	return city, nil
 }
 
 // DeleteCity removes a city
 func DeleteCity(city models.City) error {
 	// hard delete
-	db.Delete(&city)
+	if err := DB.Delete(&city); err != nil {
+		return err.Error
+	}
+
+	return nil 
 }
 

@@ -16,7 +16,10 @@ services:
         image: postgres:latest
         ports:
             - "5432:5432"
-        entrypoint: psql -U postgres -c "create database wrdb"
+        environment:
+            POSTGRES_PASSWORD:  dev
+            POSTGRES_USER: dev
+        command: psql -U dev -c "create database wrdb"
         volumes:
             - db:/data/db
 

@@ -47,6 +47,7 @@ func (r Renderer) Render(w io.Writer, name string, data interface{}, c echo.Cont
 }
 
 func main() {
+
 	// ================== RENDERER ================== //
 	renderer := Renderer{
 		Debug: true,
