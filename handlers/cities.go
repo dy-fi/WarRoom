@@ -78,14 +78,28 @@ func GetCityByID(c echo.Context) error {
 func EditCity(c echo.Context) error {
 	// get ID param
 	id := c.Param("id")
-	city := repos.GetCityById(id)
+	city, err := repos.GetCityByID(id)
+	bindee := new(models.City)
 
-	repos.UpdateCity(&city, c.FormParams)
+	// bind request data
+	if err = c.Bind(bindee); err != nil {
+		log.Println(err)
+		return c.Render(http.StatusBadRequest, "error.html", "Invalid data provided")
+	}
+
+	// only map allowed fields
+	load := make(map[string]interface{})
+	load["Name"] = bindee.Name
+	load["Places"] = bindee.Places
+	load["Output"] = bindee.Output 
+
+	// update silently
+	repos.UpdateCity(&city, load)
 	
 	return c.Render(http.StatusAccepted, "/target/"+id, nil)
 }
 
-// NewCityForm renders the new room form
+// NewCityForm handler - renders the new room form
 func NewCityForm(c echo.Context) error {
 	return c.Render(http.StatusOK, "./templates/room-form.html", nil)
 }
@@ -100,11 +114,11 @@ func CreateCity(c echo.Context) error {
 		// Place: TODO
 	}
 
-	// couldn't create city in database
 	city, err := repos.CreateCity(*r)
+	// bind fails case
 	if err != nil {
 		log.Println(err)
-		return c.JSON(http.StatusInternalServerError, "Error: Couldn't create city in database")
+		return c.Render(http.StatusInternalServerError, error.html, "Error: Couldn't create city in database")
 	}
 
 	// render 
