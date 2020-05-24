@@ -13,13 +13,16 @@ services:
 
     db:
         container_name: postgres
-        image: postgres:latest
+        build:
+            context: .
+            dockerfile: Dockerfile-Postgres
         ports:
             - "5432:5432"
         environment:
-            POSTGRES_PASSWORD:  dev
-            POSTGRES_USER: dev
-        command: psql -U dev -c "create database wrdb"
+            - POSTGRES_PASSWORD=dev
+            - POSTGRES_USER=dev
+            - POSTGRES_DB=wrdb
+        # command: psql -U dev -c "create database wrdb"
         volumes:
             - db:/data/db
 

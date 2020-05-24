@@ -118,7 +118,7 @@ func CreateCity(c echo.Context) error {
 	// bind fails case
 	if err != nil {
 		log.Println(err)
-		return c.Render(http.StatusInternalServerError, error.html, "Error: Couldn't create city in database")
+		return c.Render(http.StatusInternalServerError, "error.html", "Error: Couldn't create city in database")
 	}
 
 	// render 

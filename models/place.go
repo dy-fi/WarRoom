@@ -12,8 +12,6 @@ type Place struct {
 	URL string `json:"url"`
 	// Address is the Xpath identifying the location
 	Address string `json:"address"`
-	// Values is the last recorded values for this location (10 to start)
-	Values []float32 `json:"state"`
 	// Style is the graph style
 	Style string `json:"style"`
 }
