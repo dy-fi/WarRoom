@@ -4,12 +4,11 @@ import (
 	"errors"
 
 	"github.com/dy-fi/war-room/models"
-
 )
 
 // GetCityID returns an Id given a city model
 func GetCityID(city models.City) string {
-	return string(city.Id)
+	return string(city.ID)
 }
 
 // GetAllCities returns a list of every city document in the database

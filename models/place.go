@@ -6,6 +6,8 @@ import "github.com/jinzhu/gorm"
 // Place is a webscrapper address
 type Place struct {
 	gorm.Model
+	// Room is the room id reference
+	Room uint
 	// Name is the location reference
 	Name string `json:"name"`
 	// URL is the requested url
@@ -15,3 +17,4 @@ type Place struct {
 	// Style is the graph style
 	Style string `json:"style"`
 }
+

@@ -12,7 +12,6 @@ import (
 // Connect to database and return client object
 func Connect() *gorm.DB {
 	db, err := gorm.Open("postgres", "host=postgres user=dev password=dev dbname=wrdb")
-	defer db.Close()
 
 	if err != nil {
 		// db is needed so panic out

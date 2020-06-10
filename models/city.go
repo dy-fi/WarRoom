@@ -1,7 +1,6 @@
 package models
 
 import (
-	"github.com/globalsign/mgo/bson"
 	"github.com/flosch/pongo2"
 	"github.com/jinzhu/gorm"
 )
@@ -9,15 +8,10 @@ import (
 // City model
 type City struct {
 	gorm.Model
-	Id      bson.ObjectId `json:"id" bson:"_id,omitempty"`
 	// name of the room
 	Name string `json:"name"`
 	// original author, will show in parent and child docs
 	Author string `json:"author"`
-	// scrapping locations
-	Places []bson.ObjectId `json:"places"`
-	// output type
-	Output bool `json:"output"`
 }
 
 // ToPongoContext converts a city struct into a pongo readable format
@@ -25,8 +19,6 @@ func (c City) ToPongoContext() pongo2.Context {
 	data := pongo2.Context{
 		"name": c.Name,
 		"author": c.Author,
-		"places": c.Places,
-		"output": c.Output,
 	}
 	return data
 

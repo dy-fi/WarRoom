@@ -4,6 +4,8 @@ import (
 	"log"
 	"net/http"
 
+	// "github.com/lib/pq"
+
 	"github.com/labstack/echo"
 	"github.com/flosch/pongo2"
 	"github.com/dy-fi/war-room/models"
@@ -84,14 +86,12 @@ func EditCity(c echo.Context) error {
 	// bind request data
 	if err = c.Bind(bindee); err != nil {
 		log.Println(err)
-		return c.Render(http.StatusBadRequest, "error.html", "Invalid data provided")
+		return c.Render(http.StatusBadRequest, "error.html", repos.FormatError("Invalid data provided", err))
 	}
 
 	// only map allowed fields
 	load := make(map[string]interface{})
 	load["Name"] = bindee.Name
-	load["Places"] = bindee.Places
-	load["Output"] = bindee.Output 
 
 	// update silently
 	repos.UpdateCity(&city, load)
@@ -109,16 +109,29 @@ func CreateCity(c echo.Context) error {
 	r := new(models.City)
 
 	// Manually set values
-	r = &models.City{
-		Name: c.FormValue("name"),
-		// Place: TODO
+	r = &models.City {
+		Name: c.FormValue("title"),
 	}
 
 	city, err := repos.CreateCity(*r)
 	// bind fails case
 	if err != nil {
 		log.Println(err)
-		return c.Render(http.StatusInternalServerError, "error.html", "Error: Couldn't create city in database")
+		return c.Render(http.StatusInternalServerError, "error.html", repos.FormatError("Couldn't create city in the database", err))
+	}
+
+	// package place
+	p := &models.Place {
+		Room: r.ID, 
+		Name: c.FormValue("name"),
+		URL: c.FormValue("url"),
+		Address: c.FormValue("path"),
+	}
+
+	_, err = repos.CreatePlace(*p)
+	if err != nil {
+		log.Println(err)
+		return c.Render(http.StatusInternalServerError, "error.html", repos.FormatError("Couldn't create origin place in the database", err))
 	}
 
 	// render 
@@ -127,16 +140,15 @@ func CreateCity(c echo.Context) error {
 
 // DeleteCity handler - delete one city by ID
 func DeleteCity(c echo.Context) error {
+	// find city
 	city, err := repos.GetCityByID(c.Param("id"))
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, "Couldn't find city to delete")
+		return c.Render(http.StatusBadRequest, "./templates/error.html", repos.FormatError("Couldn't find city to delete", err))
 	}
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, "Error: Couldn't find city to delete")
-	}
+	// delete
 	if repos.DeleteCity(city) != nil {
-		return c.JSON(http.StatusInternalServerError, "Error: Couldn't delete city")
+		return c.Render(http.StatusInternalServerError, "./templates/error.html", repos.FormatError("Couldn't delete city from database", err))
 	}
 
-	return c.JSON(http.StatusAccepted, "/")
+	return GetAllCities(c)
 }
