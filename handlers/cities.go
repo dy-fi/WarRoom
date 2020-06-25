@@ -1,34 +1,76 @@
 package handlers
 
 import (
-	"log"
 	"net/http"
+	"strconv"
+	"strings"
+	"json"
+	"time"
 
-	// "github.com/lib/pq"
-
-	"github.com/labstack/echo"
 	"github.com/flosch/pongo2"
+	"github.com/gorilla/websocket"
+	"github.com/labstack/echo"
+
 	"github.com/dy-fi/war-room/models"
 	repos "github.com/dy-fi/war-room/repositories"
 )
 
-// Getcity handler - starts websocket connection and reads city
-// func Getcity(c echo.Context) error {
-// 	// get id
-// 	id, err := repos.StringToUint(c.Param("id"))
-// 	if err != nil {
-// 		log.Printf("Couldnt resolve id: %v\n", err)
-// 		return c.JSON(http.StatusBadRequest, "Error: Couldn't resolve city id")
-// 	}
-// 	// get city
-// 	city, err := repos.GetCityByID(id)
-// 	if err != nil {
-// 		log.Println(err)
-// 		return c.JSON(http.StatusOK, "Error: Couldn't get city")
-// 	}
-// 	// sockets
+var (
+	upgrader = websocket.Upgrader{}
+)
 
-// }
+// GetCity handler - starts websocket connection and reads city
+func GetCity(c echo.Context) error {
+	// get id
+	id := c.Param("id")
+	// parse into uint
+	pid, err := strconv.Atoi(id)
+	if err != nil {
+		c.Logger().Error(err)
+		return c.Render(http.StatusNotFound, "error.html", repos.FormatError("Invalid room", err))
+	}
+	rid := uint(pid)
+
+	// get all places with id
+	places := repos.GetPlacesByRoomID(rid)
+	roomLength := len(places)
+
+	// sockets
+	ws, err := upgrader.Upgrade(c.Response(), c.Request(), nil)
+	if err != nil {
+		return err
+	}
+	defer ws.Close()
+
+	timeoutStamp := string(time.Now().Unix())
+
+	for {
+		// read
+		_, msg, err := ws.ReadMessage()
+		if err != nil {
+			c.Logger().Error(err)
+			return c.Render(http.StatusInternalServerError, "./templates/error.html", repos.FormatError("Something went wrong server-side.  We'll fix this asap!", err))
+		}
+
+		// stream data until stop signal
+		input := make(chan repos.Point, roomLength)
+		if !strings.Contains(string(msg), "STOP") {
+			// async worker calls
+			for _, place := range places {
+				go repos.StreamPlace(place, input)
+			}
+			// write
+			for i := 0; i < roomLength; i++ {
+				if err := ws.WriteMessage(websocket.TextMessage, []byte(json.Marshall(<-input))); err != nil {
+					c.Logger().Error(err)
+					return c.Render(http.StatusConflict, "./templates/error.html", repos.FormatError("Something went wrong grabbing the values", err))
+				}
+			}
+		} else {
+			break
+		}
+	}
+}
 
 // GetAllCities - get all cities in database
 func GetAllCities(c echo.Context) error {
@@ -45,18 +87,18 @@ func GetAllCities(c echo.Context) error {
 	return c.Render(http.StatusOK, "./templates/rooms.html", data)
 }
 
-// GetCityByID - get a single city by its ID
-func GetCityByID(c echo.Context) error {
-	id := c.Param("id")
+// // GetCityByID - get a single city by its ID
+// func GetCityByID(c echo.Context) error {
+// 	id := c.Param("id")
 
-	city, err := repos.GetCityByID(id)
-	if err != nil {
-		log.Println("Error: ")
-		log.Println(err)
-		return c.JSON(http.StatusBadRequest, "Error: Couldn't find that city")
-	}
-	return c.JSON(http.StatusOK, city)
-}
+// 	city, err := repos.GetCityByID(id)
+// 	if err != nil {
+// 		c.Logger().Error(err)
+// 		return c.Render(http.StatusBadRequest, "../templates/error.html", repos.FormatError("No city with that ID found", err))
+// 	}
+
+// 	return c.Render(http.StatusOK, city)
+// }
 
 // // GetCities handler - get all cities associated with a user
 // func GetCitiesByUser(c echo.Context) error {
@@ -85,7 +127,7 @@ func EditCity(c echo.Context) error {
 
 	// bind request data
 	if err = c.Bind(bindee); err != nil {
-		log.Println(err)
+		c.Logger().Error(err)
 		return c.Render(http.StatusBadRequest, "error.html", repos.FormatError("Invalid data provided", err))
 	}
 
@@ -116,7 +158,7 @@ func CreateCity(c echo.Context) error {
 	city, err := repos.CreateCity(*r)
 	// bind fails case
 	if err != nil {
-		log.Println(err)
+		c.Logger().Error(err)
 		return c.Render(http.StatusInternalServerError, "error.html", repos.FormatError("Couldn't create city in the database", err))
 	}
 
@@ -130,7 +172,7 @@ func CreateCity(c echo.Context) error {
 
 	_, err = repos.CreatePlace(*p)
 	if err != nil {
-		log.Println(err)
+		c.Logger().Error(err)
 		return c.Render(http.StatusInternalServerError, "error.html", repos.FormatError("Couldn't create origin place in the database", err))
 	}
 
@@ -143,12 +185,13 @@ func DeleteCity(c echo.Context) error {
 	// find city
 	city, err := repos.GetCityByID(c.Param("id"))
 	if err != nil {
+		c.Logger().Error(err)
 		return c.Render(http.StatusBadRequest, "./templates/error.html", repos.FormatError("Couldn't find city to delete", err))
 	}
 	// delete
 	if repos.DeleteCity(city) != nil {
 		return c.Render(http.StatusInternalServerError, "./templates/error.html", repos.FormatError("Couldn't delete city from database", err))
 	}
-
+	// Return to list silently
 	return GetAllCities(c)
 }

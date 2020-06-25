@@ -7,8 +7,11 @@ import (
 	
 )
 
-
-// TODO
+// Point is a single found datapoint
+type Point struct {
+	name string		`json:"name"`
+	value string	`json:"value"`
+}
 
 // CreatePlace creates a place in the database 
 func CreatePlace(place models.Place) (models.Place, error) {

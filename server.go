@@ -20,11 +20,9 @@ type Renderer struct {
 func (r Renderer) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
 
 	var ctx pongo2.Context
-
 	if data != nil {
 		var ok bool
 		ctx, ok = data.(pongo2.Context)
-
 		if !ok {
 			ctx = nil 
 		}
@@ -32,7 +30,6 @@ func (r Renderer) Render(w io.Writer, name string, data interface{}, c echo.Cont
 
 	var t *pongo2.Template
 	var err error
-
 	if r.Debug {
 		t, err = pongo2.FromFile(name)
 	} else {
@@ -52,12 +49,11 @@ func main() {
 	renderer := Renderer{
 		Debug: true,
 	}
-
 	// ==================== INIT ==================== //
 	e := echo.New()
 	e.Renderer = renderer
 	e.Static("/static", "static")
-	// ==================== MIDDLEWARE ==================== //
+	// ================= MIDDLEWARE ================= //
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	//CORS
@@ -76,10 +72,9 @@ func main() {
 	// ==================== ROUTES ==================== //
 	// rooms
 	e.GET("/", handlers.Index)
-	e.GET("/rooms", handlers.GetAllCities)
-	e.GET("/rooms/:id", handlers.GetCityByID)
-	// e.GET("/cities/ws/:id", handlers.GetCity)
-	// e.GET("/cities", handlers.GetCitiesByUser)
+	// e.GET("/rooms", handlers.GetCitiesByUser)
+	// e.GET("/rooms/:id", handlers.GetCityByID)
+	e.GET("/cities/ws/:id", handlers.GetCity)
 	e.PUT("/cities/:id/edit", handlers.EditCity)
 	e.GET("/room/new", handlers.NewCityForm)
 	e.POST("/room/new", handlers.CreateCity)
