@@ -66,8 +66,9 @@ func GetCity(c echo.Context) error {
 					return c.Render(http.StatusConflict, "./templates/error.html", repos.FormatError("Something went wrong grabbing the values", err))
 				}
 			}
+
 		} else {
-			break
+			return c.Render(http.StatusOk, "./templates/index.html", )
 		}
 	}
 }
