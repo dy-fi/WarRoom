@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"json"
-	"time"
+	"encoding/json"
+	// "time"
 
 	"github.com/flosch/pongo2"
 	"github.com/gorilla/websocket"
@@ -42,7 +42,7 @@ func GetCity(c echo.Context) error {
 	}
 	defer ws.Close()
 
-	timeoutStamp := string(time.Now().Unix())
+	// timeoutStamp := string(time.Now().Unix())
 
 	for {
 		// read
@@ -53,7 +53,7 @@ func GetCity(c echo.Context) error {
 		}
 
 		// stream data until stop signal
-		input := make(chan repos.Point, roomLength)
+		input := make(chan models.Point, roomLength)
 		if !strings.Contains(string(msg), "STOP") {
 			// async worker calls
 			for _, place := range places {
@@ -61,14 +61,23 @@ func GetCity(c echo.Context) error {
 			}
 			// write
 			for i := 0; i < roomLength; i++ {
-				if err := ws.WriteMessage(websocket.TextMessage, []byte(json.Marshall(<-input))); err != nil {
-					c.Logger().Error(err)
-					return c.Render(http.StatusConflict, "./templates/error.html", repos.FormatError("Something went wrong grabbing the values", err))
+				inp := <-input
+
+				formed_inp, err := json.Marshal(inp)
+				// marshaling
+				if err != nil {
+					c.Logger().Error(err);
+					return c.Render(http.StatusConflict, "./templates/error.html", repos.FormatError("Something went wrong trying to read the data\n\n", err))
+				}
+
+				if err := ws.WriteMessage(websocket.TextMessage, []byte(formed_inp)); err != nil {
+					c.Logger().Error(err);
+					return c.Render(http.StatusConflict, "./templates/error.html", repos.FormatError("Something went wrong trying to read the data\n\n", err))
 				}
 			}
 
 		} else {
-			return c.Render(http.StatusOk, "./templates/index.html", )
+			return c.Render(http.StatusOK, "./templates/index.html", "Stop request received...")
 		}
 	}
 }

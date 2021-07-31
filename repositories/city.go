@@ -46,12 +46,10 @@ func GetCityByID(id string) (models.City, error) {
 
 // CreateCity makes a new city
 func CreateCity(city models.City) (models.City, error) {
-	if DB.NewRecord(city) {
-		DB.Create(&city)
-	} else {
-		return city, errors.New("City already exists")
+	new_city := DB.Create(&city)
+	if new_city.Error != nil {
+		return city, new_city.Error
 	}
-
 	return city, nil
 }
 

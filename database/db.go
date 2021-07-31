@@ -2,16 +2,17 @@ package database
 
 import (
 	// gorm dialect
-	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"gorm.io/driver/postgres"
 
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 
 	"github.com/dy-fi/war-room/models"
 )
 
 // Connect to database and return client object
 func Connect() *gorm.DB {
-	db, err := gorm.Open("postgres", "host=postgres user=dev password=dev dbname=wrdb")
+	dsn := "host=localhost user=postgres password=dev dbname=postgres port=5432 sslmode=disable"
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {
 		// db is needed so panic out

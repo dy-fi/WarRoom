@@ -18,3 +18,12 @@ type Place struct {
 	Style string `json:"style"`
 }
 
+// Point is a returned single live value from a place
+type Point struct {
+	gorm.Model
+	// Place_Name is the returned values place
+	Place_Name string `json:"place_name"`
+	// Value is the returned value itself
+	Value string `json:"value"`
+}
+

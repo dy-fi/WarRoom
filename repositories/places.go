@@ -1,28 +1,21 @@
 package repos
 
 import (
-	"errors"
+	// "errors"
 
 	"github.com/dy-fi/war-room/models"
 	
 )
 
-// Point is a single found datapoint
-type Point struct {
-	name string		`json:"name"`
-	value string	`json:"value"`
-}
-
 // CreatePlace creates a place in the database 
-func CreatePlace(place models.Place) (models.Place, error) {
+func CreatePlace(place models.Place) (uint, error) {
 	// check that row does not exist
-	if DB.NewRecord(place) {
-		DB.Create(&place)
-	} else {
-		return place, errors.New("Place already exists")
+	new_place := DB.Create(&place)
+	if new_place.Error != nil {
+		return 0, new_place.Error
 	}
 
-	return place, nil
+	return place.ID, nil
 }
 
 // GetPlaceID returns a string formatted id of the given city
